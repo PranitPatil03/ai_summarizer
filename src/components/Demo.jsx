@@ -2,11 +2,28 @@ import { useState, useEffect } from "react";
 
 import { copy, linkIcon, loader, tick, send } from "../assets";
 
+import { useLazyGetSummaryQuery } from "../services/Article";
+
 const Demo = () => {
+  const [getSummary, { error, isFetching }] = useLazyGetSummaryQuery();
+
   const [article, setArticle] = useState({ url: "", summary: "" });
 
   const handleSubmit = async (e) => {
-    alert("Hello", e);
+    e.preventDefault();
+
+    const { data } = await getSummary({
+      articleUrl: article.url,
+      summarize: true,
+      summarize_language: "auto",
+    });
+
+    if (data?.article.summary) {
+      const newArticle = { ...article, summary: data?.article.summary };
+      setArticle(newArticle);
+
+      console.log(newArticle.summary);
+    }
   };
 
   return (
